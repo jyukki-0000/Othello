@@ -1,0 +1,82 @@
+body {
+    background: #F0F0F0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#game {
+    text-align: center;
+}
+
+#board {
+    margin: 0 auto;
+    border-spacing: 0;
+}
+
+#board tr {
+    height: 80px;
+}
+
+#board td {
+    width: 80px;
+    height: 80px;
+    background: #27C7F1;
+    border: 1px solid #040C1A;
+    position: relative;
+}
+
+#board td .black {
+    background: black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+}
+
+#board td .white {
+    background: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+}
+
+#board td .possible {
+    background: #1887A3;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {opacity: 1;}
+    50% {opacity: 0.5;}
+    100% {opacity: 1;}
+}
+
+.hide {
+    display: none;
+}
+
+#messageBox {
+    margin-top: 20px;
+}
+
+#turn {
+    margin-bottom: 20px;
+}
