@@ -1,11 +1,15 @@
-const boardSize = 8;
-let board = [];
-let blackIsNext = true;
-const cells = [];
+// グローバル変数の設定
+const boardSize = 8; // ボードの大きさ
+let board = []; // ボードの状態を保持する2次元配列
+let blackIsNext = true; // 黒が次の手番かどうかを保持
+const cells = []; // DOMのセル要素を保持する2次元配列
 
+// ボタンと結果表示部分のDOM要素を取得
 const restartButton = document.getElementById('restartBtn');
 const result = document.getElementById('result');
+const turn = document.getElementById('turn');
 
+// ボードの初期化
 function createBoard() {
     const table = document.getElementById('board');
     for (let i = 0; i < boardSize; i++) {
@@ -23,6 +27,7 @@ function createBoard() {
     }
 }
 
+// ゲームの初期化
 function initBoard() {
     board = [];
     for (let i = 0; i < boardSize; i++) {
@@ -39,8 +44,15 @@ function initBoard() {
         board.push(row);
     }
     blackIsNext = true;
+    updateTurn();
 }
 
+// 手番の更新
+function updateTurn() {
+    turn.textContent = blackIsNext ? '黒のターン' : '白のターン';
+}
+
+// ボードの状態を更新
 function updateBoard() {
     let blackScore = 0;
     let whiteScore = 0;
@@ -66,23 +78,13 @@ function updateBoard() {
             }
         }
     }
+    // 全てのマスが埋まった場合もしくは両方のプレイヤーが手を打てない場合にゲーム終了
+    if (blackScore + whiteScore === boardSize * boardSize || !canMove()) {
+        checkGameOver(blackScore, whiteScore);
+    }
 }
 
-function cellClick(i, j) {
-    if (!isValidMove(i, j)) {
-        return;
-    }
-    const color = blackIsNext ? 'black' : 'white';
-    const flips = getFlips(i, j);
-    board[i][j] = color;
-    for (const [x, y] of flips) {
-        board[x][y] = color;
-    }
-    blackIsNext = !blackIsNext;
-    updateBoard();
-    checkGameOver();
-}
-
+// 有効な手があるかどうかをチェック
 function isValidMove(i, j) {
     if (board[i][j] !== null) {
         return false;
@@ -94,7 +96,8 @@ function isValidMove(i, j) {
     return true;
 }
 
-function hasValidMoves() {
+// 任意のプレイヤーが動けるかどうかをチェック
+function canMove() {
     for (let i = 0; i < boardSize; i++) {
         for (let j = 0; j < boardSize; j++) {
             if (isValidMove(i, j)) {
@@ -105,6 +108,35 @@ function hasValidMoves() {
     return false;
 }
 
+// セルクリック時の挙動
+function cellClick(i, j) {
+    if (!isValidMove(i, j)) {
+        return;
+    }
+    const color = blackIsNext ? 'black' : 'white';
+    const flips = getFlips(i, j);
+    board[i][j] = color;
+    for (const [x, y] of flips) {
+        board[x][y] = color;
+    }
+    blackIsNext = !blackIsNext;
+    updateTurn();
+    updateBoard();
+}
+
+// 有効な手があるかどうかをチェック
+function isValidMove(i, j) {
+    if (board[i][j] !== null) {
+        return false;
+    }
+    const flips = getFlips(i, j);
+    if (flips.length === 0) {
+        return false;
+    }
+    return true;
+}
+
+// 裏返す石の位置を取得
 function getFlips(i, j) {
     const color = blackIsNext ? 'black' : 'white';
     const otherColor = blackIsNext ? 'white' : 'black';
@@ -126,25 +158,14 @@ function getFlips(i, j) {
     return flips;
 }
 
-function checkGameOver() {
-    if (!hasValidMoves()) {
-        let blackScore = 0;
-        let whiteScore = 0;
-        for (let i = 0; i < boardSize; i++) {
-            for (let j = 0; j < boardSize; j++) {
-                if (board[i][j] === 'black') {
-                    blackScore++;
-                } else if (board[i][j] === 'white') {
-                    whiteScore++;
-                }
-            }
-        }
-        result.textContent = blackScore > whiteScore ? '黒の勝ち' : '白の勝ち';
-        result.classList.remove('hide');
-        restartButton.classList.remove('hide');
-    }
+// ゲームオーバーの確認と処理
+function checkGameOver(blackScore, whiteScore) {
+    result.textContent = blackScore > whiteScore ? '黒の勝ち' : '白の勝ち';
+    result.classList.remove('hide');
+    restartButton.classList.remove('hide');
 }
 
+// ゲームのリスタート
 function restart() {
     const table = document.getElementById('board');
     while (table.firstChild) {
@@ -158,7 +179,10 @@ function restart() {
     restartButton.classList.add('hide');
 }
 
+// イベントリスナーの設定
 restartButton.addEventListener('click', restart);
+
+// ゲームの開始
 createBoard();
 initBoard();
 updateBoard();
